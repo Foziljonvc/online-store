@@ -1,0 +1,57 @@
+services:
+    web:
+        container_name: web
+        image: nginx:alpine
+        ports:
+            - "8000:80"  # Noto'g'ri. Siz nginxni 80-portda ishlatishingiz kerak, va uni host mashinasida boshqa portga bog'lab qo'yishingiz mumkin.
+            # O'zgartirish: "80:80"
+        volumes:
+            - ./:/var/www
+            - ./nginx.conf:/etc/nginx/conf.d/default.conf
+        depends_on:
+            - onlinestore_app
+        networks:
+            - onlinestore-network
+
+    onlinestore_app:
+        container_name: onlinestore_app
+        build: .
+        depends_on:
+            - onlinestore_db
+        volumes:
+            - ./:/var/www
+        ports:
+            - "9000:9000"  # PHP-FPM odatda 9000-portda ishlaydi, shuni ochishingiz kerak.
+        networks:
+            - onlinestore-network
+
+    onlinestore_db:
+        container_name: onlinestore_db
+        image: mysql:8
+        restart: always
+        ports:
+            - "3307:3306"
+        environment:
+            MYSQL_DATABASE: onlinestore_app
+            MYSQL_ROOT_PASSWORD: root
+        volumes:
+            - rent_db:/var/lib/mysql
+        networks:
+            - onlinestore-network
+
+    onlinestore_node:
+        container_name: onlinestore_node
+        image: node:20
+        working_dir: /var/www
+        volumes:
+            - ./:/var/www
+        networks:
+            - onlinestore-network
+        command: bash -c "npm install && npm run build"
+
+networks:
+    onlinestore-network:
+        driver: bridge
+
+volumes:
+    rent_db:
