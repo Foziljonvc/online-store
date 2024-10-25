@@ -23,8 +23,8 @@ class CommentFactory extends Factory
         return [
             'text' => $this->faker->sentence(),
             'author' => $this->faker->name(),
-            'user_id' => $this->faker->numberBetween(1, 10),
-            'product_id' => $this->faker->numberBetween(1, 10),
+            'user_id' => User::inRandomOrder()->first()->id,
+            'product_id' => Product::inRandomOrder()->first()->id,
         ];
     }
 }

@@ -18,4 +18,9 @@ class Product extends Model
         'comments',
         'category_id',
     ];
+
+    public function category(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
 }

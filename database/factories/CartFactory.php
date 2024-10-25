@@ -21,8 +21,8 @@ class CartFactory extends Factory
     public function definition(): array
     {
         return [
-            'product_id' => $this->faker->numberBetween(1, 10),
-            'user_id' => $this->faker->numberBetween(1, 10),
+            'product_id' => Product::inRandomOrder()->first()->id,
+            'user_id' => User::inRandomOrder()->first()->id,
             'count' => $this->faker->numberBetween(1, 5),
         ];
     }

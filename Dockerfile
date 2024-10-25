@@ -1,7 +1,7 @@
-# Laravel application uchun ishlatilayotgan Dockerfile
-FROM php:8.2-fpm
+# Start from the official PHP image with the required extensions
+FROM php:8.3-fpm
 
-# Laravel uchun kerakli bog'lamalarni o'rnatish
+# Install system dependencies and PHP extensions required for Laravel
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
@@ -11,17 +11,20 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd zip pdo pdo_mysql
 
-# Ishlash katalogini o'rnatish
+# Set the working directory inside the container
 WORKDIR /var/www
 
-# Laravel fayllarini konteynerga nusxalash
-COPY . /var/www
+# Copy the Laravel application files into the container
+COPY . .
 
-# Composerni o'rnatish
+# Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Laravel kutubxonalarini o'rnatish
-RUN composer install --no-dev --optimize-autoloader
+# Install Laravel dependencies
+RUN composer install
 
-# Ruxsatlarni sozlash
+# Set permissions for storage and bootstrap/cache
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+
+# Create storage/logs directory and set permissions
+RUN mkdir -p /var/www/storage/logs && chown -R www-data:www-data /var/www/storage/logs
